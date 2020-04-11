@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>811</width>
+    <height>645</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Программа для работы с ненадежной СМО</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <widget class="QLineEdit" name="lineEdit_la">
+    <property name="geometry">
+     <rect>
+      <x>381</x>
+      <y>123</y>
+      <width>133</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_intensity_choice">
+    <property name="geometry">
+     <rect>
+      <x>381</x>
+      <y>158</y>
+      <width>133</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_intensity_choice">
+    <property name="geometry">
+     <rect>
+      <x>61</x>
+      <y>158</y>
+      <width>93</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Интенсивность:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_mu">
+    <property name="geometry">
+     <rect>
+      <x>61</x>
+      <y>84</y>
+      <width>311</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Интенсивность обслуживания требования прибором</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_la">
+    <property name="geometry">
+     <rect>
+      <x>61</x>
+      <y>121</y>
+      <width>273</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Интенсивность входящего потока требований</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_mu">
+    <property name="geometry">
+     <rect>
+      <x>381</x>
+      <y>86</y>
+      <width>133</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="radioButton_alpha">
+    <property name="geometry">
+     <rect>
+      <x>61</x>
+      <y>195</y>
+      <width>143</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Наработки на отказ</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_result">
+    <property name="geometry">
+     <rect>
+      <x>381</x>
+      <y>257</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="text">
+     <string>Подсчет</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="radioButton_beta">
+    <property name="geometry">
+     <rect>
+      <x>61</x>
+      <y>228</y>
+      <width>122</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Восстановления</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_kappa">
+    <property name="geometry">
+     <rect>
+      <x>61</x>
+      <y>51</y>
+      <width>128</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Количество приборов</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_kappa">
+    <property name="geometry">
+     <rect>
+      <x>381</x>
+      <y>51</y>
+      <width>133</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="tabletTracking">
+     <bool>false</bool>
+    </property>
+    <property name="cursorPosition">
+     <number>0</number>
+    </property>
+    <property name="clearButtonEnabled">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_graphs">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>120</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Графики</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_show_reliable">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>80</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Для надежной</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textEdit_result">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>310</y>
+      <width>491</width>
+      <height>261</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>811</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Тип системы</string>
+    </property>
+    <addaction name="action"/>
+    <addaction name="action_2"/>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>Графики</string>
+    </property>
+    <addaction name="action_3"/>
+    <addaction name="action_4"/>
+   </widget>
+   <widget class="QMenu" name="menu_4">
+    <property name="title">
+     <string>О программе</string>
+    </property>
+    <addaction name="action_5"/>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_3"/>
+   <addaction name="menu_4"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="action">
+   <property name="text">
+    <string>Ненадежная</string>
+   </property>
+   <property name="statusTip">
+    <string>Show actions for unreliable system</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>Надежная</string>
+   </property>
+   <property name="statusTip">
+    <string>Show actions for reliable system</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="action_3">
+   <property name="text">
+    <string>Ненадежные</string>
+   </property>
+   <property name="statusTip">
+    <string>Show graph for unreliable system</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+N</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>Надежные</string>
+   </property>
+   <property name="statusTip">
+    <string>Show graph for reliable system</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+R</string>
+   </property>
+  </action>
+  <action name="action_5">
+   <property name="text">
+    <string>Инфо</string>
+   </property>
+   <property name="statusTip">
+    <string>Show program info</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+O</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
