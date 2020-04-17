@@ -13,22 +13,362 @@ from collections import defaultdict
 from matplotlib import pyplot as plt
 
 
-def is_digit(string):
-    if string.isdigit():
-        return True
-    else:
-        try:
-            float(string)
-            return True
-        except ValueError:
-            return False
-
-
 def btn_close_window(window):
     window.hide()
 
 
 def btn_result_reliable(window):
+    func_for_unreliable_sys(window)
+
+
+def btn_show_graph_r_la_u(window):
+    build_graph_r_la_u(window)
+
+
+def btn_show_graph_r_mu_w(window):
+    build_graph_r_mu_w(window)
+
+
+def btn_show_graph_unr_la_u(window):
+    build_graph_unr_la_u(window)
+
+
+def btn_show_graph_unr_mu_w(window):
+    build_graph_unr_mu_w(window)
+
+
+def btn_show_graph_unt_alpha_kg(window):
+    build_graph_unr_alpha_kg(window)
+
+
+def btn_show_graph_unt_beta_kh(window):
+    build_graph_unr_beta_kh(window)
+
+
+def build_graph_unr_alpha_kg(window):
+    check_input_format(window)
+    alpha_graph = np.zeros(num_steps)
+    k_g_graph = np.zeros(num_steps)
+    alpha_temp = alpha
+    for stp in range(0, num_steps):
+        alpha_graph[stp] = alpha_temp[0]
+        # коэффициент использования
+        psi = la / (k * mu)
+        # вероятность пребывания в системе 0 требований (все приборы свободны)
+        sum1 = 0
+        for n in range(0, k):
+            sum1 += ((k * psi) ** n) / m.factorial(n)
+        p = np.zeros(k + 1)
+        p[0] = (((k * psi) ** k) / (m.factorial(k) * (1 - psi)) + sum1) ** -1
+        # вероятности пребывания в системе n требований (от 1 до k)
+        for n in range(1, k + 1):
+            p[n] = p[0] * ((k * psi) ** n) / m.factorial(n)
+        # перебор комбинаций работоспособных/неработоспособных приборов
+        combList = [i for i in product(range(2), repeat=k)]
+        total_1_axis = np.sum(combList, axis=1)
+        d = defaultdict(list)
+        for i, key in enumerate(total_1_axis):
+            if combList[i] not in d[key]:
+                d[key].append(combList[i])
+        p_rob = np.zeros(k + 1)
+        for key, value in d.items():
+            pr_ns = 1
+            sum_ns = 0
+            for i in range(len(d[key])):
+                for j in range(len(d[key][i])):
+                    if j == 0:
+                        pr_ns = pr_ns * alpha_temp[j] / (alpha_temp[j] + beta[j])
+                    else:
+                        pr_ns = pr_ns * beta[j] / (alpha_temp[j] + beta[j])
+                    sum_ns += pr_ns
+                p_rob[key] += sum_ns
+        # коэффициент использования ненадежных приборов
+        sum2 = 0
+        for n in range(0, k + 1):
+            sum2 += n * p_rob[n]
+        psi_n = la / (mu * sum2)
+        # м.о. числа занятых и свободных приборов
+        g = (1 - psi_n) * k
+        # коэффициент простоя
+        k_g = g / k
+        k_g_graph[stp] = k_g
+        alpha_temp[0] += step_size
+    plt.figure(5)
+    plt.gcf().canvas.set_window_title("График заивисмости")
+    plt.ylabel('Коэффициент простоя')
+    plt.xlabel('Интенсивность наработки на отказ')
+    plt.plot(alpha_graph, k_g_graph)
+    plt.show()
+
+
+def build_graph_unr_beta_kh(window):
+    check_input_format(window)
+    beta_graph = np.zeros(num_steps)
+    k_h_graph = np.zeros(num_steps)
+    beta_temp = beta
+    for stp in range(0, num_steps):
+        beta_graph[stp] = beta_temp[len(beta_temp) - 1]
+        # коэффициент использования
+        psi = la / (k * mu)
+        # вероятность пребывания в системе 0 требований (все приборы свободны)
+        sum1 = 0
+        for n in range(0, k):
+            sum1 += ((k * psi) ** n) / m.factorial(n)
+        p = np.zeros(k + 1)
+        p[0] = (((k * psi) ** k) / (m.factorial(k) * (1 - psi)) + sum1) ** -1
+        # вероятности пребывания в системе n требований (от 1 до k)
+        for n in range(1, k + 1):
+            p[n] = p[0] * ((k * psi) ** n) / m.factorial(n)
+        # перебор комбинаций работоспособных/неработоспособных приборов
+        combList = [i for i in product(range(2), repeat=k)]
+        total_1_axis = np.sum(combList, axis=1)
+        d = defaultdict(list)
+        for i, key in enumerate(total_1_axis):
+            if combList[i] not in d[key]:
+                d[key].append(combList[i])
+        p_rob = np.zeros(k + 1)
+        for key, value in d.items():
+            pr_ns = 1
+            sum_ns = 0
+            for i in range(len(d[key])):
+                for j in range(len(d[key][i])):
+                    if j == 0:
+                        pr_ns = pr_ns * alpha[j] / (alpha[j] + beta_temp[j])
+                    else:
+                        pr_ns = pr_ns * beta_temp[j] / (alpha[j] + beta_temp[j])
+                    sum_ns += pr_ns
+                p_rob[key] += sum_ns
+        # коэффициент использования ненадежных приборов
+        sum2 = 0
+        for n in range(0, k + 1):
+            sum2 += n * p_rob[n]
+        psi_n = la / (mu * sum2)
+        # м.о. числа занятых и свободных приборов
+        h = psi_n * k
+        # коэффициент загрузки
+        k_h = h / k
+        k_h_graph[stp] = k_h
+        beta_temp[len(beta_temp) - 1] += step_size
+    plt.figure(6)
+    plt.gcf().canvas.set_window_title("График заивисмости")
+    plt.ylabel('Коэффициент загрузки')
+    plt.xlabel('Интенсивность восстановления')
+    plt.plot(beta_graph, k_h_graph)
+    plt.show()
+
+
+def build_graph_unr_la_u(window):
+    check_input_format(window)
+    la_graph = np.zeros(num_steps)
+    u_graph = np.zeros(num_steps)
+    la_temp = la
+    for stp in range(0, num_steps):
+        la_graph[stp] = la_temp
+        # коэффициент использования
+        psi = la_temp / (k * mu)
+        # вероятность пребывания в системе 0 требований (все приборы свободны)
+        sum1 = 0
+        for n in range(0, k):
+            sum1 += ((k * psi) ** n) / m.factorial(n)
+        p = np.zeros(k + 1)
+        p[0] = (((k * psi) ** k) / (m.factorial(k) * (1 - psi)) + sum1) ** -1
+        # вероятности пребывания в системе n требований (от 1 до k)
+        for n in range(1, k + 1):
+            p[n] = p[0] * ((k * psi) ** n) / m.factorial(n)
+        # перебор комбинаций работоспособных/неработоспособных приборов
+        combList = [i for i in product(range(2), repeat=k)]
+        total_1_axis = np.sum(combList, axis=1)
+        d = defaultdict(list)
+        for i, key in enumerate(total_1_axis):
+            if combList[i] not in d[key]:
+                d[key].append(combList[i])
+        p_rob = np.zeros(k + 1)
+        for key, value in d.items():
+            pr_ns = 1
+            sum_ns = 0
+            for i in range(len(d[key])):
+                for j in range(len(d[key][i])):
+                    if j == 0:
+                        pr_ns = pr_ns * alpha[j] / (alpha[j] + beta[j])
+                    else:
+                        pr_ns = pr_ns * beta[j] / (alpha[j] + beta[j])
+                    sum_ns += pr_ns
+                p_rob[key] += sum_ns
+        # коэффициент использования ненадежных приборов
+        sum2 = 0
+        for n in range(0, k + 1):
+            sum2 += n * p_rob[n]
+        psi_n = la_temp / (mu * sum2)
+        # м.о. числа занятых и свободных приборов
+        h = psi_n * k
+        # м.о. числа требований, ожидающих в очереди
+        limit = 50
+        b = 0
+        for i in range(k + 1, limit + 1):
+            for j in range(0, k + 1):
+                b += (i - j * p_rob[j]) * ((psi_n ** i * k ** k) / m.factorial(k)) * p[0]
+        # м.о. числа требований в системе
+        q = b + h
+        # м.о. длительности пребывания в системе
+        u = q / la_temp
+        u_graph[stp] = u
+        la_temp += step_size
+    plt.figure(3)
+    plt.gcf().canvas.set_window_title("График заивисмости")
+    plt.ylabel('М.о. длительности пребывания требований в системе')
+    plt.xlabel('Интенсивность входящего потока требований')
+    plt.plot(la_graph, u_graph)
+    plt.show()
+
+
+def build_graph_unr_mu_w(window):
+    check_input_format(window)
+    mu_graph = np.zeros(num_steps)
+    w_graph = np.zeros(num_steps)
+    mu_temp = mu
+    for stp in range(0, num_steps):
+        mu_graph[stp] = mu_temp
+        # коэффициент использования
+        psi = la / (k * mu_temp)
+        # вероятность пребывания в системе 0 требований (все приборы свободны)
+        sum1 = 0
+        for n in range(0, k):
+            sum1 += ((k * psi) ** n) / m.factorial(n)
+        p = np.zeros(k + 1)
+        p[0] = (((k * psi) ** k) / (m.factorial(k) * (1 - psi)) + sum1) ** -1
+        # вероятности пребывания в системе n требований (от 1 до k)
+        for n in range(1, k + 1):
+            p[n] = p[0] * ((k * psi) ** n) / m.factorial(n)
+            # перебор комбинаций работоспособных/неработоспособных приборов
+        combList = [i for i in product(range(2), repeat=k)]
+        total_1_axis = np.sum(combList, axis=1)
+        d = defaultdict(list)
+        for i, key in enumerate(total_1_axis):
+            if combList[i] not in d[key]:
+                d[key].append(combList[i])
+        p_rob = np.zeros(k + 1)
+        for key, value in d.items():
+            pr_ns = 1
+            sum_ns = 0
+            for i in range(len(d[key])):
+                for j in range(len(d[key][i])):
+                    if j == 0:
+                        pr_ns = pr_ns * alpha[j] / (alpha[j] + beta[j])
+                    else:
+                        pr_ns = pr_ns * beta[j] / (alpha[j] + beta[j])
+                    sum_ns += pr_ns
+                p_rob[key] += sum_ns
+        # коэффициент использования ненадежных приборов
+        sum2 = 0
+        for n in range(0, k + 1):
+            sum2 += n * p_rob[n]
+        psi_n = la / (mu_temp * sum2)
+        # м.о. числа требований, ожидающих в очереди
+        limit = 50
+        b = 0
+        for i in range(k + 1, limit + 1):
+            for j in range(0, k + 1):
+                b += (i - j * p_rob[j]) * ((psi_n ** i * k ** k) / m.factorial(k)) * p[0]
+        # м.о. длительности пребывания требований в очереди
+        w = b / la
+        w_graph[stp] = w
+        mu_temp += step_size
+    plt.figure(4)
+    plt.gcf().canvas.set_window_title("График заивисмости")
+    plt.ylabel('М.о. длительности пребывания требований в очереди')
+    plt.xlabel('Интенсивность обслуживания требования одним прибором')
+    plt.plot(mu_graph, w_graph)
+    plt.show()
+
+
+def build_graph_r_la_u(window):
+    check_input_format(window)
+    la_graph = np.zeros(num_steps)
+    u_graph = np.zeros(num_steps)
+    la_temp = la
+    for stp in range(0, num_steps):
+        la_graph[stp] = la_temp
+        # коэффициент использования
+        psi = la_temp / (k * mu)
+        # вероятность пребывания в системе 0 требований (все приборы свободны)
+        sum1 = 0
+        for n in range(0, k):
+            sum1 += ((k * psi) ** n) / m.factorial(n)
+        p = np.zeros(k + 1)
+        p[0] = (((k * psi) ** k) / (m.factorial(k) * (1 - psi)) + sum1) ** -1
+        # вероятности пребывания в системе n требований (от 1 до k)
+        for n in range(1, k + 1):
+            p[n] = p[0] * ((k * psi) ** n) / m.factorial(n)
+        # м.о. числа занятых и свободных приборов
+        h = psi * k
+        limit = 50
+        b = 0
+        for i in range(k + 1, limit + 1):
+            b += (i - k) * ((psi ** i * k ** k) / m.factorial(k)) * p[0]
+        # м.о. числа требований в системе
+        q = b + h
+        # м.о. длительности пребывания в системе
+        u = q / la_temp
+        u_graph[stp] = u
+        la_temp += step_size
+    plt.figure(1)
+    plt.gcf().canvas.set_window_title("График заивисмости")
+    plt.ylabel('М.о. длительности пребывания требований в системе')
+    plt.xlabel('Интенсивность входящего потока требований')
+    plt.plot(la_graph, u_graph)
+    plt.show()
+
+
+def build_graph_r_mu_w(window):
+    check_input_format(window)
+    mu_graph = np.zeros(num_steps)
+    w_graph = np.zeros(num_steps)
+    mu_temp = mu
+    for stp in range(0, num_steps):
+        mu_graph[stp] = mu_temp
+        # коэффициент использования
+        psi = la / (k * mu_temp)
+        # вероятность пребывания в системе 0 требований (все приборы свободны)
+        sum1 = 0
+        for n in range(0, k):
+            sum1 += ((k * psi) ** n) / m.factorial(n)
+        p = np.zeros(k + 1)
+        p[0] = (((k * psi) ** k) / (m.factorial(k) * (1 - psi)) + sum1) ** -1
+        # вероятности пребывания в системе n требований (от 1 до k)
+        for n in range(1, k + 1):
+            p[n] = p[0] * ((k * psi) ** n) / m.factorial(n)
+        limit = 50
+        b = 0
+        for i in range(k + 1, limit + 1):
+            b += (i - k) * ((psi ** i * k ** k) / m.factorial(k)) * p[0]
+        # м.о. длительности пребывания требований в очереди
+        w = b / la
+        w_graph[stp] = w
+        mu_temp += step_size
+    plt.figure(2)
+    plt.gcf().canvas.set_window_title("График заивисмости")
+    plt.ylabel('М.о. длительности пребывания требований в очереди')
+    plt.xlabel('Интенсивность обслуживания требования одним прибором')
+    plt.plot(mu_graph, w_graph)
+    plt.show()
+
+
+def check_input_format(window):
+    global step_size, num_steps
+    try:
+        step_size = int(window.lineEdit_step_size.text())
+    except ValueError:
+        error_dialog = QtWidgets.QErrorMessage()
+        error_dialog.showMessage('Oh no!')
+    try:
+        num_steps = int(window.lineEdit_num_steps.text())
+    except ValueError:
+        error_dialog = QtWidgets.QErrorMessage()
+        error_dialog.showMessage('Oh no!')
+
+
+# Функция подсчета характеристик СМО с надежными приборами
+def func_for_unreliable_sys(window):
     # коэффициент использования
     psi = la / (k * mu)
     window.lineEdit_use.setText(str('%.4f' % psi))
@@ -78,8 +418,9 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.ui.pushButton_result.clicked.connect(lambda: self.btn_result_unreliable())
         self.ui.action.triggered.connect(lambda: self.clicked(self.ui.centralwidget.show()))
-        self.ui.pushButton_graphs.clicked.connect(lambda: self.btn_show_graphs())
-        self.ui.pushButton_show_reliable.clicked.connect(lambda: self.btn_show_reliable_results())
+        self.ui.pushButton_graphs.clicked.connect(lambda: self.btn_show_graphs_window())
+        self.ui.pushButton_show_reliable.clicked.connect(lambda: self.btn_show_reliable_window())
+        self.setWindowIcon(QtGui.QIcon('iconSGU.png'))
 
     def clicked(self, form):
         self.ui.centralwidget.setLayout(form)
@@ -102,19 +443,41 @@ class MyWin(QtWidgets.QMainWindow):
                                       'Введите {} в соответствии с количеством приборов'.format(line))
 
     # endregion
-    # region Buttons
-    def btn_show_reliable_results(self):
+
+    # region Windows
+    def window_reliable_sys(self):
         window = Ui_ReliableResults()
         window.setupUi(self.windowReliableResults)
         self.windowReliableResults.show()
+        self.windowReliableResults.setWindowIcon(QtGui.QIcon('iconSGU.png'))
         window.pushButton_close.clicked.connect(lambda: self.windowReliableResults.hide())
         window.pushButton_show.clicked.connect(lambda: btn_result_reliable(window))
 
-    def btn_show_graphs(self):
+    def window_graphs(self):
         window = Ui_GraphWindow()
         window.setupUi(self.windowGraphs)
         self.windowGraphs.show()
+        self.windowGraphs.setWindowIcon(QtGui.QIcon('iconSGU.png'))
         window.pushButton_close.clicked.connect(lambda: self.windowGraphs.hide())
+        window.pushButton_r_la_u.clicked.connect(lambda: btn_show_graph_r_la_u(window))
+        window.pushButton_r_mu_w.clicked.connect(lambda: btn_show_graph_r_mu_w(window))
+        window.pushButton_unr_la_u.clicked.connect(lambda: btn_show_graph_unr_la_u(window))
+        window.pushButton_unr_mu_w.clicked.connect(lambda: build_graph_unr_mu_w(window))
+        window.pushButton_unr_alpha_kg.clicked.connect(lambda: build_graph_unr_alpha_kg(window))
+        window.pushButton_unr_beta_kh.clicked.connect(lambda: build_graph_unr_beta_kh(window))
+
+    # endregion
+
+    # region Buttons
+
+    def btn_show_reliable_window(self):
+        self.window_reliable_sys()
+
+    def btn_show_graphs_window(self):
+        self.window_graphs()
+
+    def btn_result_unreliable(self):
+        self.func_for_unreliable_sys()
 
     # endregion
 
@@ -178,8 +541,9 @@ class MyWin(QtWidgets.QMainWindow):
 
     # endregion
 
-    # Функция подсчета СМО с ненадежными приборами
-    def btn_result_unreliable(self):
+    # region Function for calculation
+    # Функция подсчета характеристик СМО с ненадежными приборами
+    def func_for_unreliable_sys(self):
         # Очистка поля вывода результатов
         self.ui.textEdit_result.setText("")
         self.check_input_format()
@@ -220,9 +584,7 @@ class MyWin(QtWidgets.QMainWindow):
                 pr_ns = 1
                 sum_ns = 0
                 for i in range(len(d[key])):
-                    # print(d[key][i])
                     for j in range(len(d[key][i])):
-                        # print(d[key][i][j])
                         if j == 0:
                             pr_ns = pr_ns * alpha[j] / (alpha[j] + beta[j])
                         else:
@@ -265,6 +627,7 @@ class MyWin(QtWidgets.QMainWindow):
             result += "Коэффициент простоя: " + str('%.4f' % k_g) + "\n"
             # Выводим в правое поле результат
             self.ui.textEdit_result.setText(result)
+    # endregion
 
 
 if __name__ == "__main__":
