@@ -35,7 +35,7 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>670</x>
       <y>170</y>
       <width>221</width>
       <height>16</height>
@@ -155,7 +155,7 @@
         <bool>true</bool>
        </property>
        <property name="text">
-        <string>М.о. длительности пребывания требований в очереди от нтенсивности обслуживания требования одним прибором</string>
+        <string>М.о. длительности пребывания требований в очереди от интенсивности обслуживания требования одним прибором</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
@@ -211,7 +211,7 @@
     <property name="geometry">
      <rect>
       <x>600</x>
-      <y>210</y>
+      <y>200</y>
       <width>341</width>
       <height>171</height>
      </rect>
@@ -220,7 +220,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label_r_mu_w">
        <property name="text">
-        <string>М.о. длительности пребывания требований в очереди от нтенсивности обслуживания требования одним прибором</string>
+        <string>М.о. длительности пребывания требований в очереди от интенсивности обслуживания требования одним прибором</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
