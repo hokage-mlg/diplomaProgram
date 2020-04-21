@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Программа для работы с ненадежной СМО</string>
+   <string>Программа для исследования ненадежной СМО</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="enabled">
@@ -30,7 +30,7 @@
      <enum>Qt::LeftToRight</enum>
     </property>
     <property name="text">
-     <string>Подсчет</string>
+     <string>Запуск</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_graphs">

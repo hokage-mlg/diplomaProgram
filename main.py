@@ -1,8 +1,8 @@
 import sys
 import os
 from graphUI import *
-from reliableUI import *
-from patternUI import *
+from reliable_sysUI import *
+from mainUI import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
 import numpy as np
@@ -40,12 +40,16 @@ def btn_show_graph_unr_mu_w(window):
     build_graph_unr_mu_w(window)
 
 
-def btn_show_graph_unt_alpha_kg(window):
+def btn_show_graph_unr_alpha_kg(window):
     build_graph_unr_alpha_kg(window)
 
 
-def btn_show_graph_unt_beta_kh(window):
+def btn_show_graph_unr_beta_kh(window):
     build_graph_unr_beta_kh(window)
+
+
+def btn_show_graph_unr_beta_b(window):
+    build_graph_unr_beta_b(window)
 
 
 # endregion
@@ -116,25 +120,25 @@ def build_graph_unr_alpha_kg(window):
             for i, key in enumerate(total_1_axis):
                 if combList[i] not in d[key]:
                     d[key].append(combList[i])
-            p_rob = np.zeros(k + 1)
+            p_ns = np.zeros(k + 1)
             for key, value in d.items():
-                pr_ns = 1
                 sum_ns = 0
                 for i in range(len(d[key])):
+                    pr_ns = 1
                     for j in range(len(d[key][i])):
-                        if j == 0:
-                            pr_ns = pr_ns * alpha_temp[j] / (alpha_temp[j] + beta[j])
+                        if d[key][i][j] == 0:
+                            pr_ns *= alpha_temp[j] / (alpha_temp[j] + beta[j])
                         else:
-                            pr_ns = pr_ns * beta[j] / (alpha_temp[j] + beta[j])
-                        sum_ns += pr_ns
-                    p_rob[key] += sum_ns
+                            pr_ns *= beta[j] / (alpha_temp[j] + beta[j])
+                    sum_ns += pr_ns
+                p_ns[key] = sum_ns
             # коэффициент использования ненадежных приборов
             sum2 = 0
             for n in range(0, k + 1):
-                sum2 += n * p_rob[n]
-            psi_n = la / (mu * sum2)
+                sum2 += n * p_ns[n]
+            psi_ns = la / (mu * sum2)
             # м.о. числа занятых и свободных приборов
-            g = (1 - psi_n) * k
+            g = (1 - psi_ns) * k
             # коэффициент простоя
             k_g = g / k
             k_g_graph[stp] = k_g
@@ -172,25 +176,25 @@ def build_graph_unr_beta_kh(window):
             for i, key in enumerate(total_1_axis):
                 if combList[i] not in d[key]:
                     d[key].append(combList[i])
-            p_rob = np.zeros(k + 1)
+            p_ns = np.zeros(k + 1)
             for key, value in d.items():
-                pr_ns = 1
                 sum_ns = 0
                 for i in range(len(d[key])):
+                    pr_ns = 1
                     for j in range(len(d[key][i])):
-                        if j == 0:
-                            pr_ns = pr_ns * alpha[j] / (alpha[j] + beta_temp[j])
+                        if d[key][i][j] == 0:
+                            pr_ns *= alpha[j] / (alpha[j] + beta_temp[j])
                         else:
-                            pr_ns = pr_ns * beta_temp[j] / (alpha[j] + beta_temp[j])
-                        sum_ns += pr_ns
-                    p_rob[key] += sum_ns
+                            pr_ns *= beta_temp[j] / (alpha[j] + beta_temp[j])
+                    sum_ns += pr_ns
+                p_ns[key] = sum_ns
             # коэффициент использования ненадежных приборов
             sum2 = 0
             for n in range(0, k + 1):
-                sum2 += n * p_rob[n]
-            psi_n = la / (mu * sum2)
+                sum2 += n * p_ns[n]
+            psi_ns = la / (mu * sum2)
             # м.о. числа занятых и свободных приборов
-            h = psi_n * k
+            h = psi_ns * k
             # коэффициент загрузки
             k_h = h / k
             k_h_graph[stp] = k_h
@@ -200,6 +204,63 @@ def build_graph_unr_beta_kh(window):
         plt.ylabel('Коэффициент загрузки')
         plt.xlabel('Интенсивность восстановления')
         plt.plot(beta_graph, k_h_graph)
+        plt.show()
+
+
+def build_graph_unr_beta_b(window):
+    if check_input_format(window):
+        beta_graph = np.zeros(num_steps)
+        b_graph = np.zeros(num_steps)
+        beta_temp = beta
+        for stp in range(0, num_steps):
+            beta_graph[stp] = beta_temp[len(beta_temp) - 1]
+            # коэффициент использования
+            psi = la / (k * mu)
+            # вероятность пребывания в системе 0 требований (все приборы свободны)
+            sum1 = 0
+            for n in range(0, k):
+                sum1 += ((k * psi) ** n) / m.factorial(n)
+            p = np.zeros(k + 1)
+            p[0] = (((k * psi) ** k) / (m.factorial(k) * (1 - psi)) + sum1) ** -1
+            # вероятности пребывания в системе n требований (от 1 до k)
+            for n in range(1, k + 1):
+                p[n] = p[0] * ((k * psi) ** n) / m.factorial(n)
+            # перебор комбинаций работоспособных/неработоспособных приборов
+            combList = [i for i in product(range(2), repeat=k)]
+            total_1_axis = np.sum(combList, axis=1)
+            d = defaultdict(list)
+            for i, key in enumerate(total_1_axis):
+                if combList[i] not in d[key]:
+                    d[key].append(combList[i])
+            p_ns = np.zeros(k + 1)
+            for key, value in d.items():
+                sum_ns = 0
+                for i in range(len(d[key])):
+                    pr_ns = 1
+                    for j in range(len(d[key][i])):
+                        if d[key][i][j] == 0:
+                            pr_ns *= alpha[j] / (alpha[j] + beta_temp[j])
+                        else:
+                            pr_ns *= beta_temp[j] / (alpha[j] + beta_temp[j])
+                    sum_ns += pr_ns
+                p_ns[key] = sum_ns
+            # коэффициент использования ненадежных приборов
+            sum2 = 0
+            for n in range(0, k + 1):
+                sum2 += n * p_ns[n]
+            psi_ns = la / (mu * sum2)
+            limit = 50
+            b = 0
+            for i in range(k + 1, limit + 1):
+                for j in range(0, k + 1):
+                    b += (i - j * p_ns[j]) * ((psi_ns ** i * k ** k) / m.factorial(k)) * p[0]
+            b_graph[stp] = b
+            beta_temp[len(beta_temp) - 1] += step_size
+        plt.figure(7)
+        plt.gcf().canvas.set_window_title("График зависимости для ненадежной системы")
+        plt.ylabel('М.о. количества требований в очереди')
+        plt.xlabel('Интенсивность восстановления')
+        plt.plot(beta_graph, b_graph)
         plt.show()
 
 
@@ -228,31 +289,31 @@ def build_graph_unr_la_u(window):
             for i, key in enumerate(total_1_axis):
                 if combList[i] not in d[key]:
                     d[key].append(combList[i])
-            p_rob = np.zeros(k + 1)
+            p_ns = np.zeros(k + 1)
             for key, value in d.items():
-                pr_ns = 1
                 sum_ns = 0
                 for i in range(len(d[key])):
+                    pr_ns = 1
                     for j in range(len(d[key][i])):
-                        if j == 0:
-                            pr_ns = pr_ns * alpha[j] / (alpha[j] + beta[j])
+                        if d[key][i][j] == 0:
+                            pr_ns *= alpha[j] / (alpha[j] + beta[j])
                         else:
-                            pr_ns = pr_ns * beta[j] / (alpha[j] + beta[j])
-                        sum_ns += pr_ns
-                    p_rob[key] += sum_ns
+                            pr_ns *= pr_ns * beta[j] / (alpha[j] + beta[j])
+                    sum_ns += pr_ns
+                p_ns[key] = sum_ns
             # коэффициент использования ненадежных приборов
             sum2 = 0
             for n in range(0, k + 1):
-                sum2 += n * p_rob[n]
-            psi_n = la_temp / (mu * sum2)
+                sum2 += n * p_ns[n]
+            psi_ns = la_temp / (mu * sum2)
             # м.о. числа занятых и свободных приборов
-            h = psi_n * k
+            h = psi_ns * k
             # м.о. числа требований, ожидающих в очереди
             limit = 50
             b = 0
             for i in range(k + 1, limit + 1):
                 for j in range(0, k + 1):
-                    b += (i - j * p_rob[j]) * ((psi_n ** i * k ** k) / m.factorial(k)) * p[0]
+                    b += (i - j * p_ns[j]) * ((psi_ns ** i * k ** k) / m.factorial(k)) * p[0]
             # м.о. числа требований в системе
             q = b + h
             # м.о. длительности пребывания в системе
@@ -292,29 +353,29 @@ def build_graph_unr_mu_w(window):
             for i, key in enumerate(total_1_axis):
                 if combList[i] not in d[key]:
                     d[key].append(combList[i])
-            p_rob = np.zeros(k + 1)
+            p_ns = np.zeros(k + 1)
             for key, value in d.items():
-                pr_ns = 1
                 sum_ns = 0
                 for i in range(len(d[key])):
+                    pr_ns = 1
                     for j in range(len(d[key][i])):
-                        if j == 0:
-                            pr_ns = pr_ns * alpha[j] / (alpha[j] + beta[j])
+                        if d[key][i][j] == 0:
+                            pr_ns *= alpha[j] / (alpha[j] + beta[j])
                         else:
-                            pr_ns = pr_ns * beta[j] / (alpha[j] + beta[j])
-                        sum_ns += pr_ns
-                    p_rob[key] += sum_ns
+                            pr_ns *= beta[j] / (alpha[j] + beta[j])
+                    sum_ns += pr_ns
+                p_ns[key] = sum_ns
             # коэффициент использования ненадежных приборов
             sum2 = 0
             for n in range(0, k + 1):
-                sum2 += n * p_rob[n]
-            psi_n = la / (mu_temp * sum2)
+                sum2 += n * p_ns[n]
+            psi_ns = la / (mu_temp * sum2)
             # м.о. числа требований, ожидающих в очереди
             limit = 50
             b = 0
             for i in range(k + 1, limit + 1):
                 for j in range(0, k + 1):
-                    b += (i - j * p_rob[j]) * ((psi_n ** i * k ** k) / m.factorial(k)) * p[0]
+                    b += (i - j * p_ns[j]) * ((psi_ns ** i * k ** k) / m.factorial(k)) * p[0]
             # м.о. длительности пребывания требований в очереди
             w = b / la
             w_graph[stp] = w
@@ -413,25 +474,28 @@ def check_input_format(window):
         msg.setText("Введите количество шагов в корректном формате.")
         msg.exec_()
     try:
-        step_size = int(window.lineEdit_step_size.text())
+        step_size = float(window.lineEdit_step_size.text())
     except ValueError:
         msg = QMessageBox()
         msg.setWindowIcon(QtGui.QIcon('iconSGU.png'))
         msg.setWindowTitle("Ошибка ввода. Некорректный формат.")
         msg.setText("Введите размер шага в корректном формате.")
         msg.exec_()
-    if num_steps < 0:
+
+    if num_steps <= 0:
         msg = QMessageBox()
         msg.setWindowIcon(QtGui.QIcon('iconSGU.png'))
         msg.setWindowTitle("Ошибка ввода. Некорректное значение.")
         msg.setText("Количество шагов не может принимать нулевое или отрицательное значение.")
         msg.exec_()
-    elif step_size < 0:
+
+    elif step_size <= 0:
         msg = QMessageBox()
         msg.setWindowIcon(QtGui.QIcon('iconSGU.png'))
         msg.setWindowTitle("Ошибка ввода. Некорректное значение.")
         msg.setText("Размер шага не может принимать нулевое или отрицательное значение.")
         msg.exec_()
+
     else:
         return True
 
@@ -498,9 +562,10 @@ class MyWin(QtWidgets.QMainWindow):
         window.pushButton_r_la_u.clicked.connect(lambda: btn_show_graph_r_la_u(window))
         window.pushButton_r_mu_w.clicked.connect(lambda: btn_show_graph_r_mu_w(window))
         window.pushButton_unr_la_u.clicked.connect(lambda: btn_show_graph_unr_la_u(window))
-        window.pushButton_unr_mu_w.clicked.connect(lambda: build_graph_unr_mu_w(window))
-        window.pushButton_unr_alpha_kg.clicked.connect(lambda: build_graph_unr_alpha_kg(window))
-        window.pushButton_unr_beta_kh.clicked.connect(lambda: build_graph_unr_beta_kh(window))
+        window.pushButton_unr_mu_w.clicked.connect(lambda: btn_show_graph_unr_mu_w(window))
+        window.pushButton_unr_alpha_kg.clicked.connect(lambda: btn_show_graph_unr_alpha_kg(window))
+        window.pushButton_unr_beta_kh.clicked.connect(lambda: btn_show_graph_unr_beta_kh(window))
+        window.pushButton_unr_beta_b.clicked.connect(lambda: btn_show_graph_unr_beta_b(window))
 
     # endregion
 
@@ -606,9 +671,6 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.textEdit_result.setText("")
         if self.check_input_format():
             result = ""
-            result += "kappa: " + str(k) + "la: " + str(la) + "mu: " + str(mu) + "alpha: " + str(
-                alpha) + "Beta: " + str(
-                beta) + "\n"
             # коэффициент использования
             psi = la / (k * mu)
             # вероятность пребывания в системе 0 требований (все приборы свободны)
@@ -621,51 +683,43 @@ class MyWin(QtWidgets.QMainWindow):
             for n in range(1, k + 1):
                 p[n] = p[0] * ((k * psi) ** n) / m.factorial(n)
             result += "Вероятности состояний системы: " + str(p) + "\n"
-            # проверка суммы вероятностей на 1
-            check1 = 0
-            for i in p:
-                check1 += i
-            result += "Проверка суммы вероятностей: " + str('%.0f' % check1) + "\n"
             # перебор комбинаций работоспособных/неработоспособных приборов
             combList = [i for i in product(range(2), repeat=k)]
-            result += str(combList) + "\n"
             total_1_axis = np.sum(combList, axis=1)
             d = defaultdict(list)
             for i, key in enumerate(total_1_axis):
                 if combList[i] not in d[key]:
                     d[key].append(combList[i])
+            p_ns = np.zeros(k + 1)
             for key, value in d.items():
-                result += str(key) + ":" + str(value) + "\n"
-            p_rob = np.zeros(k + 1)
-            for key, value in d.items():
-                pr_ns = 1
                 sum_ns = 0
                 for i in range(len(d[key])):
+                    pr_ns = 1
                     for j in range(len(d[key][i])):
-                        if j == 0:
+                        if d[key][i][j] == 0:
                             pr_ns = pr_ns * alpha[j] / (alpha[j] + beta[j])
                         else:
                             pr_ns = pr_ns * beta[j] / (alpha[j] + beta[j])
-                        sum_ns += pr_ns
-                    p_rob[key] += sum_ns
-            result += "Распределение вероятностей ненадежных приборов: " + str(p_rob) + "\n"
+                    sum_ns += pr_ns
+                p_ns[key] = sum_ns
+            result += "Распределение вероятностей работоспособности ненадежных приборов: " + str(p_ns) + "\n"
             # коэффициент использования ненадежных приборов
             sum2 = 0
             for n in range(0, k + 1):
-                sum2 += n * p_rob[n]
-            psi_n = la / (mu * sum2)
-            result += "Коэффициент использования ненадежных приборов: " + str(psi_n) + "\n"
+                sum2 += n * p_ns[n]
+            psi_ns = la / (mu * sum2)
+            result += "Коэффициент использования ненадежных приборов: " + str(psi_ns) + "\n"
             # м.о. числа занятых и свободных приборов
-            h = psi_n * k
+            h = psi_ns * k
             result += "М.о. числа занятых приборов: " + str(h) + "\n"
-            g = (1 - psi_n) * k
+            g = (1 - psi_ns) * k
             result += "М.о. числа свободных приборов: " + str(g) + "\n"
             # м.о. числа требований, ожидающих в очереди
             limit = 50
             b = 0
             for i in range(k + 1, limit + 1):
                 for j in range(0, k + 1):
-                    b += (i - j * p_rob[j]) * ((psi_n ** i * k ** k) / m.factorial(k)) * p[0]
+                    b += (i - j * p_ns[j]) * ((psi_ns ** i * k ** k) / m.factorial(k)) * p[0]
             result += "М.о. числа требований, ожидающих в очереди: " + str('%.4f' % b) + "\n"
             # м.о. числа требований в системе
             q = b + h
