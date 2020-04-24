@@ -14,6 +14,20 @@ from collections import defaultdict
 from matplotlib import pyplot as plt
 
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
+Label = resource_path("labelSSU.png")
+
+
 # region Additional windows
 # region Buttons
 def btn_close_window(window):
@@ -469,7 +483,7 @@ def check_input_format(window):
         num_steps = int(window.lineEdit_num_steps.text())
     except ValueError:
         msg = QMessageBox()
-        msg.setWindowIcon(QtGui.QIcon('iconSGU.png'))
+        msg.setWindowIcon(QtGui.QIcon(Label))
         msg.setWindowTitle("Ошибка ввода. Некорректный формат.")
         msg.setText("Введите количество шагов в корректном формате.")
         msg.exec_()
@@ -477,21 +491,21 @@ def check_input_format(window):
         step_size = float(window.lineEdit_step_size.text())
     except ValueError:
         msg = QMessageBox()
-        msg.setWindowIcon(QtGui.QIcon('iconSGU.png'))
+        msg.setWindowIcon(QtGui.QIcon(Label))
         msg.setWindowTitle("Ошибка ввода. Некорректный формат.")
         msg.setText("Введите размер шага в корректном формате.")
         msg.exec_()
 
     if num_steps <= 0:
         msg = QMessageBox()
-        msg.setWindowIcon(QtGui.QIcon('iconSGU.png'))
+        msg.setWindowIcon(QtGui.QIcon(Label))
         msg.setWindowTitle("Ошибка ввода. Некорректное значение.")
         msg.setText("Количество шагов не может принимать нулевое или отрицательное значение.")
         msg.exec_()
 
     elif step_size <= 0:
         msg = QMessageBox()
-        msg.setWindowIcon(QtGui.QIcon('iconSGU.png'))
+        msg.setWindowIcon(QtGui.QIcon(Label))
         msg.setWindowTitle("Ошибка ввода. Некорректное значение.")
         msg.setText("Размер шага не может принимать нулевое или отрицательное значение.")
         msg.exec_()
@@ -512,7 +526,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.windowGraphs = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowIcon(QtGui.QIcon('iconSGU.png'))
+        self.setWindowIcon(QtGui.QIcon(Label))
         self.ui.pushButton_result.clicked.connect(lambda: self.btn_result_unreliable())
         self.ui.action.triggered.connect(lambda: self.clicked(self.ui.centralwidget.show()))
         self.ui.pushButton_graphs.clicked.connect(lambda: self.btn_show_graphs_window())
@@ -549,7 +563,7 @@ class MyWin(QtWidgets.QMainWindow):
         window = Ui_ReliableResults()
         window.setupUi(self.windowReliableResults)
         self.windowReliableResults.show()
-        self.windowReliableResults.setWindowIcon(QtGui.QIcon('iconSGU.png'))
+        self.windowReliableResults.setWindowIcon(QtGui.QIcon(Label))
         window.pushButton_close.clicked.connect(lambda: self.windowReliableResults.hide())
         window.pushButton_show.clicked.connect(lambda: btn_result_reliable(window))
 
@@ -557,7 +571,7 @@ class MyWin(QtWidgets.QMainWindow):
         window = Ui_GraphWindow()
         window.setupUi(self.windowGraphs)
         self.windowGraphs.show()
-        self.windowGraphs.setWindowIcon(QtGui.QIcon('iconSGU.png'))
+        self.windowGraphs.setWindowIcon(QtGui.QIcon(Label))
         window.pushButton_close.clicked.connect(lambda: self.windowGraphs.hide())
         window.pushButton_r_la_u.clicked.connect(lambda: btn_show_graph_r_la_u(window))
         window.pushButton_r_mu_w.clicked.connect(lambda: btn_show_graph_r_mu_w(window))
