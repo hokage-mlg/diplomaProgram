@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>973</width>
-    <height>570</height>
+    <width>999</width>
+    <height>695</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,15 +17,17 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>170</y>
-      <width>221</width>
-      <height>16</height>
+      <x>110</x>
+      <y>130</y>
+      <width>231</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -35,15 +37,17 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>670</x>
-      <y>170</y>
+      <x>680</x>
+      <y>130</y>
       <width>221</width>
-      <height>16</height>
+      <height>20</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
      </font>
     </property>
     <property name="text">
@@ -54,9 +58,9 @@
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>210</y>
+      <y>170</y>
       <width>351</width>
-      <height>271</height>
+      <height>401</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout_2">
@@ -76,6 +80,11 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Коэффициент простоя от интенсивности наработки на отказ</string>
@@ -119,6 +128,11 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="mouseTracking">
         <bool>true</bool>
        </property>
@@ -153,6 +167,7 @@
        </property>
        <property name="font">
         <font>
+         <pointsize>10</pointsize>
          <stylestrategy>PreferDefault</stylestrategy>
         </font>
        </property>
@@ -175,6 +190,11 @@
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="label_unr_beta_b">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>М.о. количества требований в очереди от интенсинвости восстановления</string>
        </property>
@@ -197,6 +217,11 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Коэффициент загрузки от интенсивности восстановления</string>
@@ -227,15 +252,20 @@
    <widget class="QWidget" name="formLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>600</x>
-      <y>200</y>
-      <width>341</width>
-      <height>171</height>
+      <x>610</x>
+      <y>164</y>
+      <width>361</width>
+      <height>211</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout_3">
      <item row="2" column="0">
       <widget class="QLabel" name="label_r_mu_w">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>М.о. длительности пребывания требований в очереди от интенсивности обслуживания требования одним прибором</string>
        </property>
@@ -257,16 +287,6 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_r_la_u">
-       <property name="text">
-        <string>М.о. длительности пребывания требований в системе от интенсивности входящего потока требований</string>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="1">
       <widget class="QPushButton" name="pushButton_r_mu_w">
        <property name="sizePolicy">
@@ -277,6 +297,21 @@
        </property>
        <property name="text">
         <string>Показать</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_r_la_u">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>М.о. длительности пребывания требований в системе от интенсивности входящего потока требований</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -294,6 +329,11 @@
     <layout class="QFormLayout" name="formLayout_4">
      <item row="0" column="0">
       <widget class="QLabel" name="label_num_steps">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Количество шагов</string>
        </property>
@@ -311,6 +351,11 @@
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_step_size">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Размер шага</string>
        </property>
@@ -331,11 +376,16 @@
    <widget class="QPushButton" name="pushButton_close">
     <property name="geometry">
      <rect>
-      <x>430</x>
-      <y>460</y>
+      <x>460</x>
+      <y>570</y>
       <width>93</width>
       <height>28</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>Закрыть</string>
@@ -347,7 +397,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>973</width>
+     <width>999</width>
      <height>26</height>
     </rect>
    </property>

@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>602</width>
-    <height>546</height>
+    <width>607</width>
+    <height>538</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Результаты для надежной системы</string>
+   <string>Результаты для надежной СМО</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="formLayoutWidget">
@@ -19,7 +19,7 @@
      <rect>
       <x>50</x>
       <y>40</y>
-      <width>501</width>
+      <width>531</width>
       <height>380</height>
      </rect>
     </property>
@@ -32,6 +32,11 @@
      </property>
      <item row="1" column="0">
       <widget class="QLabel" name="label_use">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Коэффициент использования приборов</string>
        </property>
@@ -46,6 +51,11 @@
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_busy">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>М.о. числа занятых приборов</string>
        </property>
@@ -60,6 +70,11 @@
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="label_free">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>М.о. числа свободных приборов</string>
        </property>
@@ -74,6 +89,11 @@
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="label_queue">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>М.о. числа требований, ожидающих в очереди</string>
        </property>
@@ -88,6 +108,11 @@
      </item>
      <item row="5" column="0">
       <widget class="QLabel" name="label_num_sys">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>М.о. числа требований в системе</string>
        </property>
@@ -102,6 +127,11 @@
      </item>
      <item row="6" column="0">
       <widget class="QLabel" name="label_time_sys">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>М.о. длительности пребывания в системе</string>
        </property>
@@ -116,8 +146,16 @@
      </item>
      <item row="7" column="0">
       <widget class="QLabel" name="label_time_queue">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>М.о. длительности пребывания требований в очереди</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -130,6 +168,11 @@
      </item>
      <item row="8" column="0">
       <widget class="QLabel" name="label_busy_rate">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Коэффициент загрузки</string>
        </property>
@@ -144,6 +187,11 @@
      </item>
      <item row="9" column="0">
       <widget class="QLabel" name="label_free_rate">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Коэффициент простоя</string>
        </property>
@@ -167,6 +215,11 @@
       <height>28</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>Закрыть</string>
     </property>
@@ -180,6 +233,11 @@
       <height>28</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>Показать</string>
     </property>
@@ -190,7 +248,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>602</width>
+     <width>607</width>
      <height>26</height>
     </rect>
    </property>

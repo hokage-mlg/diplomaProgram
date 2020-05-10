@@ -527,6 +527,14 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.setWindowIcon(QtGui.QIcon(Label))
+        self.resize(555, 315)
+        self.ui.pushButton_result.setGeometry(QtCore.QRect(240, 240, 93, 28))
+        self.ui.textEdit_result.hide()
+        self.ui.pushButton_show_reliable.hide()
+        self.ui.pushButton_graphs.hide()
+        self.ui.pushButton_clear.hide()
+        self.ui.pushButton_save.hide()
+        self.ui.pushButton_open.hide()
         self.ui.pushButton_result.clicked.connect(lambda: self.btn_result_unreliable())
         self.ui.action.triggered.connect(lambda: self.clicked(self.ui.centralwidget.show()))
         self.ui.pushButton_graphs.clicked.connect(lambda: self.btn_show_graphs_window())
@@ -629,13 +637,13 @@ class MyWin(QtWidgets.QMainWindow):
         try:
             alpha = list(map(float, self.ui.lineEdit_alpha.text().split()))
         except ValueError:
-            self.popup_error_format("интенсивность наработки на отказ")
+            self.popup_error_format("интенсивности наработки на отказ")
             self.ui.centralwidget.show()
 
         try:
             beta = list(map(float, self.ui.lineEdit_beta.text().split()))
         except ValueError:
-            self.popup_error_format("интенсивность восстановления")
+            self.popup_error_format("интенсивности восстановления")
             self.ui.centralwidget.show()
         if k <= 0:
             self.popup_error_zero_or_negative("Количество приборов")
@@ -647,16 +655,16 @@ class MyWin(QtWidgets.QMainWindow):
             self.popup_error_zero_or_negative("Интенсивность входящего потока требований")
             self.ui.centralwidget.show()
         elif len(alpha) != k:
-            self.popup_error_quantity("интенсивность наработки на отказ")
+            self.popup_error_quantity("интенсивности наработки на отказ")
             self.ui.centralwidget.show()
         elif len(beta) != k:
-            self.popup_error_quantity("интенсивность восстановления")
+            self.popup_error_quantity("интенсивности восстановления")
             self.ui.centralwidget.show()
         elif not all(n > 0 for n in alpha):
-            self.popup_error_zero_or_negative("Интенсивность наработки на отказ")
+            self.popup_error_zero_or_negative("Интенсивности наработки на отказ")
             self.ui.centralwidget.show()
         elif not all(n > 0 for n in beta):
-            self.popup_error_zero_or_negative("Интенсивность восстановления")
+            self.popup_error_zero_or_negative("Интенсивности восстановления")
             self.ui.centralwidget.show()
         else:
             return True
@@ -752,6 +760,14 @@ class MyWin(QtWidgets.QMainWindow):
             result += "Коэффициент простоя: " + str('%.4f' % k_g) + "\n"
             # Выводим в правое поле результат
             self.ui.textEdit_result.setText(result)
+            self.ui.textEdit_result.show()
+            self.ui.pushButton_clear.show()
+            self.ui.pushButton_save.show()
+            self.ui.pushButton_open.show()
+            self.ui.pushButton_show_reliable.show()
+            self.ui.pushButton_graphs.show()
+            self.ui.pushButton_result.setGeometry(QtCore.QRect(381, 257, 93, 28))
+            self.resize(804, 714)
 
 
 # endregion
