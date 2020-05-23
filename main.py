@@ -8,66 +8,26 @@ from PyQt5.QtWidgets import QMessageBox, QFileDialog
 import numpy as np
 import math as m
 from itertools import product
-from collections import Counter
 from collections import defaultdict
 
 from matplotlib import pyplot as plt
 
 
+# Для .exe приложения (абсолютный путь)
 def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
-
     return os.path.join(base_path, relative_path)
 
 
 Label = resource_path("labelSSU.png")
 
 
-# region Additional windows
-# region Buttons
-def btn_close_window(window):
-    window.hide()
+# region Дополнительные окна
 
-
-def btn_result_reliable(window):
-    func_for_reliable_sys(window)
-
-
-def btn_show_graph_r_la_u(window):
-    build_graph_r_la_u(window)
-
-
-def btn_show_graph_r_mu_w(window):
-    build_graph_r_mu_w(window)
-
-
-def btn_show_graph_unr_la_u(window):
-    build_graph_unr_la_u(window)
-
-
-def btn_show_graph_unr_mu_w(window):
-    build_graph_unr_mu_w(window)
-
-
-def btn_show_graph_unr_alpha_kg(window):
-    build_graph_unr_alpha_kg(window)
-
-
-def btn_show_graph_unr_beta_kh(window):
-    build_graph_unr_beta_kh(window)
-
-
-def btn_show_graph_unr_beta_b(window):
-    build_graph_unr_beta_b(window)
-
-
-# endregion
-# region Actions
+# region Действия на дополнительных окнах
 # Функция подсчета характеристик СМО с надежными приборами
 def func_for_reliable_sys(window):
     # коэффициент использования
@@ -109,6 +69,7 @@ def func_for_reliable_sys(window):
     window.lineEdit_free_rate.setText(str('%.4f' % k_g))
 
 
+# График зависимости коэффициента простоя обслуживающих приборов от их интенсивности наработки на отказ
 def build_graph_unr_alpha_kg(window):
     if check_input_format(window):
         alpha_graph = np.zeros(num_steps)
@@ -165,6 +126,136 @@ def build_graph_unr_alpha_kg(window):
         plt.show()
 
 
+# График зависимости м.о. количества требований в системе от интенсивности наработки на отказ
+def build_graph_unr_alpha_n(window):
+    if check_input_format(window):
+        alpha_graph = np.zeros(num_steps)
+        n_graph = np.zeros(num_steps)
+        alpha_temp = alpha
+        for stp in range(0, num_steps):
+            alpha_graph[stp] = alpha_temp[0]
+            # коэффициент использования
+            psi = la / (k * mu)
+            # вероятность пребывания в системе 0 требований (все приборы свободны)
+            sum1 = 0
+            for n in range(0, k):
+                sum1 += ((k * psi) ** n) / m.factorial(n)
+            p = np.zeros(k + 1)
+            p[0] = (((k * psi) ** k) / (m.factorial(k) * (1 - psi)) + sum1) ** -1
+            # вероятности пребывания в системе n требований (от 1 до k)
+            for n in range(1, k + 1):
+                p[n] = p[0] * ((k * psi) ** n) / m.factorial(n)
+            # перебор комбинаций работоспособных/неработоспособных приборов
+            combList = [i for i in product(range(2), repeat=k)]
+            total_1_axis = np.sum(combList, axis=1)
+            d = defaultdict(list)
+            for i, key in enumerate(total_1_axis):
+                if combList[i] not in d[key]:
+                    d[key].append(combList[i])
+            p_ns = np.zeros(k + 1)
+            for key, value in d.items():
+                sum_ns = 0
+                for i in range(len(d[key])):
+                    pr_ns = 1
+                    for j in range(len(d[key][i])):
+                        if d[key][i][j] == 0:
+                            pr_ns = pr_ns * alpha_temp[j] / (alpha_temp[j] + beta[j])
+                        else:
+                            pr_ns = pr_ns * beta[j] / (alpha_temp[j] + beta[j])
+                    sum_ns += pr_ns
+                p_ns[key] = sum_ns
+            # коэффициент использования ненадежных приборов
+            sum2 = 0
+            for n in range(0, k + 1):
+                sum2 += n * p_ns[n]
+            psi_ns = la / (mu * sum2)
+            # м.о. числа занятых и свободных приборов
+            h = psi_ns * k
+            # м.о. числа требований, ожидающих в очереди
+            limit = 50
+            b = 0
+            for i in range(k + 1, limit + 1):
+                for j in range(0, k + 1):
+                    b += (i - j * p_ns[j]) * ((psi_ns ** i * k ** k) / m.factorial(k)) * p[0]
+            # м.о. числа требований в системе
+            q = b + h
+            for i in range(0, len(alpha_temp)):
+                alpha_temp[i] += step_size
+            n_graph[stp] = q
+        plt.figure(9)
+        plt.gcf().canvas.set_window_title("График зависимости для ненадежной системы")
+        plt.ylabel('М.о. количества требований в системе')
+        plt.xlabel('Интенсивность наработки на отказ')
+        plt.plot(alpha_graph, n_graph)
+        plt.show()
+
+
+# График зависимости м.о. длительности пребывания требований в системе от интенсивности наработки на отказ
+def build_graph_unr_alpha_u(window):
+    if check_input_format(window):
+        alpha_graph = np.zeros(num_steps)
+        u_graph = np.zeros(num_steps)
+        alpha_temp = alpha
+        for stp in range(0, num_steps):
+            alpha_graph[stp] = alpha_temp[0]
+            # коэффициент использования
+            psi = la / (k * mu)
+            # вероятность пребывания в системе 0 требований (все приборы свободны)
+            sum1 = 0
+            for n in range(0, k):
+                sum1 += ((k * psi) ** n) / m.factorial(n)
+            p = np.zeros(k + 1)
+            p[0] = (((k * psi) ** k) / (m.factorial(k) * (1 - psi)) + sum1) ** -1
+            # вероятности пребывания в системе n требований (от 1 до k)
+            for n in range(1, k + 1):
+                p[n] = p[0] * ((k * psi) ** n) / m.factorial(n)
+            # перебор комбинаций работоспособных/неработоспособных приборов
+            combList = [i for i in product(range(2), repeat=k)]
+            total_1_axis = np.sum(combList, axis=1)
+            d = defaultdict(list)
+            for i, key in enumerate(total_1_axis):
+                if combList[i] not in d[key]:
+                    d[key].append(combList[i])
+            p_ns = np.zeros(k + 1)
+            for key, value in d.items():
+                sum_ns = 0
+                for i in range(len(d[key])):
+                    pr_ns = 1
+                    for j in range(len(d[key][i])):
+                        if d[key][i][j] == 0:
+                            pr_ns = pr_ns * alpha_temp[j] / (alpha_temp[j] + beta[j])
+                        else:
+                            pr_ns = pr_ns * beta[j] / (alpha_temp[j] + beta[j])
+                    sum_ns += pr_ns
+                p_ns[key] = sum_ns
+            # коэффициент использования ненадежных приборов
+            sum2 = 0
+            for n in range(0, k + 1):
+                sum2 += n * p_ns[n]
+            psi_ns = la / (mu * sum2)
+            # м.о. числа занятых и свободных приборов
+            h = psi_ns * k
+            # м.о. числа требований, ожидающих в очереди
+            limit = 50
+            b = 0
+            for i in range(k + 1, limit + 1):
+                for j in range(0, k + 1):
+                    b += (i - j * p_ns[j]) * ((psi_ns ** i * k ** k) / m.factorial(k)) * p[0]
+            # м.о. числа требований в системе
+            q = b + h
+            u = q / la
+            for i in range(0, len(alpha_temp)):
+                alpha_temp[i] += step_size
+            u_graph[stp] = u
+        plt.figure(10)
+        plt.gcf().canvas.set_window_title("График зависимости для ненадежной системы")
+        plt.ylabel('М.о. длительности пребывания требований в системе')
+        plt.xlabel('Интенсивность наработки на отказ')
+        plt.plot(alpha_graph, u_graph)
+        plt.show()
+
+
+# График зависимости коэффициента загрузки обслуживающих приборов от интенсивности их восстановления
 def build_graph_unr_beta_kh(window):
     if check_input_format(window):
         beta_graph = np.zeros(num_steps)
@@ -221,6 +312,8 @@ def build_graph_unr_beta_kh(window):
         plt.show()
 
 
+# График зависимости математического ожидания количества требований в очереди от
+# интенсивности восстановления обслуживающих приборов
 def build_graph_unr_beta_b(window):
     if check_input_format(window):
         beta_graph = np.zeros(num_steps)
@@ -278,6 +371,8 @@ def build_graph_unr_beta_b(window):
         plt.show()
 
 
+# График зависимости математического ожидания длительности пребывания требований
+# в системе от интенсивности входящего потока требований
 def build_graph_unr_la_u(window):
     if check_input_format(window):
         la_graph = np.zeros(num_steps)
@@ -342,6 +437,8 @@ def build_graph_unr_la_u(window):
         plt.show()
 
 
+# График зависимости математического ожидания длительности пребывания требований
+# в очереди от интенсивности обслуживания требования прибором
 def build_graph_unr_mu_w(window):
     if check_input_format(window):
         mu_graph = np.zeros(num_steps)
@@ -402,6 +499,8 @@ def build_graph_unr_mu_w(window):
         plt.show()
 
 
+# График зависимости математического ожидания длительности
+# пребывания требований в системе от интенсивности входящего потока требований для системы с надежными приборами
 def build_graph_r_la_u(window):
     if check_input_format(window):
         check_input_format(window)
@@ -441,6 +540,8 @@ def build_graph_r_la_u(window):
         plt.show()
 
 
+# График зависимости математического ожидания длительности пребывания
+# требований в очереди от интенсивности обслуживания требования прибором для системы с надежными приборами
 def build_graph_r_mu_w(window):
     if check_input_format(window):
         mu_graph = np.zeros(num_steps)
@@ -517,9 +618,9 @@ def check_input_format(window):
 # endregion
 # endregion
 
-# region Main window
+# region Главное окно
 class MyWin(QtWidgets.QMainWindow):
-    # region Initialization
+    # region Инициализация приложения
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         self.windowReliableResults = QtWidgets.QMainWindow()
@@ -535,20 +636,20 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.pushButton_clear.hide()
         self.ui.pushButton_save.hide()
         self.ui.pushButton_open.hide()
-        self.ui.pushButton_result.clicked.connect(lambda: self.btn_result_unreliable())
+        self.ui.pushButton_result.clicked.connect(lambda: self.func_for_unreliable_sys())
         self.ui.action.triggered.connect(lambda: self.clicked(self.ui.centralwidget.show()))
-        self.ui.pushButton_graphs.clicked.connect(lambda: self.btn_show_graphs_window())
-        self.ui.pushButton_show_reliable.clicked.connect(lambda: self.btn_show_reliable_window())
-        self.ui.pushButton_clear.clicked.connect(lambda: self.btn_clear_result())
-        self.ui.pushButton_save.clicked.connect(lambda: self.btn_save_result())
-        self.ui.pushButton_open.clicked.connect(lambda: self.btn_open_result())
+        self.ui.pushButton_graphs.clicked.connect(lambda: self.window_graphs())
+        self.ui.pushButton_show_reliable.clicked.connect(lambda: self.window_reliable_sys())
+        self.ui.pushButton_clear.clicked.connect(lambda: self.clear_result())
+        self.ui.pushButton_save.clicked.connect(lambda: self.save_result())
+        self.ui.pushButton_open.clicked.connect(lambda: self.open_result())
 
     def clicked(self, form):
         self.ui.centralwidget.setLayout(form)
         self.ui.centralwidget.adjustSize()
 
     # endregion
-    # region Popups with errors
+    # region Всплывающие окна с предупреждениями
     def popup_error_format(self, line):
         QtWidgets.QMessageBox.warning(self,
                                       'Ошибка ввода. Некорректный формат.',
@@ -566,14 +667,14 @@ class MyWin(QtWidgets.QMainWindow):
 
     # endregion
 
-    # region Windows
+    # region Установка дополнительных окон
     def window_reliable_sys(self):
         window = Ui_ReliableResults()
         window.setupUi(self.windowReliableResults)
         self.windowReliableResults.show()
         self.windowReliableResults.setWindowIcon(QtGui.QIcon(Label))
         window.pushButton_close.clicked.connect(lambda: self.windowReliableResults.hide())
-        window.pushButton_show.clicked.connect(lambda: btn_result_reliable(window))
+        window.pushButton_show.clicked.connect(lambda: func_for_reliable_sys(window))
 
     def window_graphs(self):
         window = Ui_GraphWindow()
@@ -581,39 +682,19 @@ class MyWin(QtWidgets.QMainWindow):
         self.windowGraphs.show()
         self.windowGraphs.setWindowIcon(QtGui.QIcon(Label))
         window.pushButton_close.clicked.connect(lambda: self.windowGraphs.hide())
-        window.pushButton_r_la_u.clicked.connect(lambda: btn_show_graph_r_la_u(window))
-        window.pushButton_r_mu_w.clicked.connect(lambda: btn_show_graph_r_mu_w(window))
-        window.pushButton_unr_la_u.clicked.connect(lambda: btn_show_graph_unr_la_u(window))
-        window.pushButton_unr_mu_w.clicked.connect(lambda: btn_show_graph_unr_mu_w(window))
-        window.pushButton_unr_alpha_kg.clicked.connect(lambda: btn_show_graph_unr_alpha_kg(window))
-        window.pushButton_unr_beta_kh.clicked.connect(lambda: btn_show_graph_unr_beta_kh(window))
-        window.pushButton_unr_beta_b.clicked.connect(lambda: btn_show_graph_unr_beta_b(window))
+        window.pushButton_r_la_u.clicked.connect(lambda: build_graph_r_la_u(window))
+        window.pushButton_r_mu_w.clicked.connect(lambda: build_graph_r_mu_w(window))
+        window.pushButton_unr_la_u.clicked.connect(lambda: build_graph_unr_la_u(window))
+        window.pushButton_unr_mu_w.clicked.connect(lambda: build_graph_unr_mu_w(window))
+        window.pushButton_unr_alpha_kg.clicked.connect(lambda: build_graph_unr_alpha_kg(window))
+        window.pushButton_unr_beta_kh.clicked.connect(lambda: build_graph_unr_beta_kh(window))
+        window.pushButton_unr_beta_b.clicked.connect(lambda: build_graph_unr_beta_b(window))
+        window.pushButton_unr_alpha_n.clicked.connect(lambda: build_graph_unr_alpha_n(window))
+        window.pushButton_unr_alpha_u.clicked.connect(lambda: build_graph_unr_alpha_u(window))
 
     # endregion
 
-    # region Buttons
-
-    def btn_show_reliable_window(self):
-        self.window_reliable_sys()
-
-    def btn_show_graphs_window(self):
-        self.window_graphs()
-
-    def btn_result_unreliable(self):
-        self.func_for_unreliable_sys()
-
-    def btn_clear_result(self):
-        self.clear_result()
-
-    def btn_save_result(self):
-        self.save_result()
-
-    def btn_open_result(self):
-        self.open_result()
-
-    # endregion
-
-    # region Checkers
+    # region Проверка ввода
     def check_input_format(self):
         global alpha, la, mu, beta, k
         try:
@@ -669,9 +750,9 @@ class MyWin(QtWidgets.QMainWindow):
         else:
             return True
 
-            # endregion
+    # endregion
 
-    # region Actions
+    # region Функции главного окна
     def save_result(self):
         file_name = QFileDialog.getSaveFileName(self, "Save File", os.getenv("HOME"))
         with open(file_name[0] + '.txt', "w") as f:
@@ -705,7 +786,7 @@ class MyWin(QtWidgets.QMainWindow):
             for n in range(1, k + 1):
                 p[n] = p[0] * ((k * psi) ** n) / m.factorial(n)
             result += "Вероятности состояний системы: " + str(p) + "\n"
-            # перебор комбинаций работоспособных/неработоспособных приборов
+            # перебор комбинаций работоспособных / неработоспособных приборов
             combList = [i for i in product(range(2), repeat=k)]
             total_1_axis = np.sum(combList, axis=1)
             d = defaultdict(list)
@@ -758,9 +839,10 @@ class MyWin(QtWidgets.QMainWindow):
             # коэффициент простоя
             k_g = g / k
             result += "Коэффициент простоя: " + str('%.4f' % k_g) + "\n"
-            # Выводим в правое поле результат
+            # выводим в нижнее поле результат
             self.ui.textEdit_result.setText(result)
             self.ui.textEdit_result.show()
+            # перестроение окна
             self.ui.pushButton_clear.show()
             self.ui.pushButton_save.show()
             self.ui.pushButton_open.show()

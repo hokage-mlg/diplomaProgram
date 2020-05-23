@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>999</width>
-    <height>695</height>
+    <height>769</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -59,8 +59,8 @@
      <rect>
       <x>60</x>
       <y>170</y>
-      <width>351</width>
-      <height>401</height>
+      <width>441</width>
+      <height>451</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout_2">
@@ -102,6 +102,11 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Показать</string>
        </property>
@@ -114,6 +119,11 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Показать</string>
@@ -151,6 +161,11 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Показать</string>
@@ -196,7 +211,7 @@
         </font>
        </property>
        <property name="text">
-        <string>М.о. количества требований в очереди от интенсинвости восстановления</string>
+        <string>М.о. количества требований в очереди от интенсивности восстановления</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
@@ -205,6 +220,11 @@
      </item>
      <item row="3" column="1">
       <widget class="QPushButton" name="pushButton_unr_beta_b">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Показать</string>
        </property>
@@ -239,8 +259,67 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="focusPolicy">
         <enum>Qt::ClickFocus</enum>
+       </property>
+       <property name="text">
+        <string>Показать</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_unr_alpha_n">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>М.о. количества требований в системе от интенсивности наработки на отказ</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QPushButton" name="pushButton_unr_alpha_n">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Показать</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="label_unr_alpha_u">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>М.о. длительности пребывания требований в системе от интенсивности наработки на отказ</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QPushButton" name="pushButton_unr_alpha_u">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Показать</string>
@@ -282,6 +361,11 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Показать</string>
        </property>
@@ -294,6 +378,11 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="text">
         <string>Показать</string>
@@ -377,7 +466,7 @@
     <property name="geometry">
      <rect>
       <x>460</x>
-      <y>570</y>
+      <y>650</y>
       <width>93</width>
       <height>28</height>
      </rect>
